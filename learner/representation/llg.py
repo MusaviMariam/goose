@@ -3,12 +3,12 @@ from planning.translate.pddl import Atom, NegatedAtom, Truth
 
 
 class LLG_FEATURES(Enum):
-    P = 0  # is predicate
-    A = 1  # is action
+    P = 0  # is predicate: Predicate symbols define what relations exist | Needed for reasoning about actions
+    A = 1  # is action:
     G = 2  # is positive goal (grounded)
     N = 3  # is negative goal (grounded)
     S = 4  # is activated (grounded)
-    O = 5  # is object
+    O = 5  # is object: Objects define the domain universe
 
 
 ENC_FEAT_SIZE = len(LLG_FEATURES)
@@ -134,12 +134,12 @@ class LiftedLearningGraph(Representation, ABC):
         # actions
         largest_action_schema = 0
         for action in self.problem.actions:
-            G.add_node(action.name, x=self._feature(LLG_FEATURES.A))
+            G.add_node(action.name, x=self._feature(LLG_FEATURES.A)) # add Action node
             action_args = {}
 
             largest_action_schema = max(largest_action_schema, len(action.parameters))
             for i, arg in enumerate(action.parameters):
-                arg_node = (action.name, f"action-var-{i}")  # action var
+                arg_node = (action.name, f"action-var-{i}")  # action var | Action parameter nodes
                 G.add_node(arg_node, x=self._if_feature(idx=i))
                 action_args[arg.name] = arg_node
                 G.add_edge(
@@ -149,7 +149,7 @@ class LiftedLearningGraph(Representation, ABC):
             def deal_with_action_prec_or_eff(predicates, edge_label):
                 for z, predicate in enumerate(predicates):
                     pred = predicate.predicate
-                    aux_node = (pred, f"{edge_label}-aux-{z}")  # aux node for duplicate preds
+                    aux_node = (pred, f"{edge_label}-aux-{z}")  # aux node for duplicate preds | Predicate auxiliary nodes
                     G.add_node(aux_node, x=self._zero_node())
 
                     assert pred in G.nodes()
