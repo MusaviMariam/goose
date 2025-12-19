@@ -29,6 +29,7 @@ where `$CMD` corresponds to your command. If do not have a GPU, you can remove `
 
 Nevertheless, you can still try to use just a virtual environment for example by
 ```
+# I tried this
 python3 -m venv venv
 . venv/bin/activate
 pip install -r requirements.txt
