@@ -1,6 +1,7 @@
 # visualize_llg.py
 import matplotlib
-matplotlib.use("TkAgg")
+#matplotlib.use('TkAgg')  
+matplotlib.use('Agg')  
 import torch
 import networkx as nx
 import matplotlib.pyplot as plt
@@ -113,6 +114,5 @@ nx.draw(
 plt.title("Lifted Learning Graph (LLG) - Blocks World")
 plt.savefig("llg_graph.png", dpi=300)
 print("Graph saved as llg_graph.png")
-plt.show()
-
+#plt.show()
 

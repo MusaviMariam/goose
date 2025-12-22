@@ -29,12 +29,15 @@ where `$CMD` corresponds to your command. If do not have a GPU, you can remove `
 
 Nevertheless, you can still try to use just a virtual environment for example by
 ```
-# I tried this
+# I tried this on Linux
 python3 -m venv venv
 . venv/bin/activate
 pip install -r requirements.txt
 ```
-
+# Windows
+ .\.venv\Scripts\Activate.ps1  
+python -m pip install -r .\requirements.txt
+python -m pip install -r .\requirements_2.txt
 ## Training
 The underlying pipeline for a training a model is
 - generating states from PDDL and optimal plan files
