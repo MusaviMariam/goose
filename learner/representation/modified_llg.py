@@ -22,6 +22,7 @@ LLG_EDGE_LABELS = OrderedDict(
         "pre_neg": 3,
         "eff_pos": 4,
         "eff_neg": 5,
+        "mutex": 6,  # not used in current LLG but reserved for future use        
     }
 )
 
@@ -61,7 +62,16 @@ class LiftedLearningGraph(Representation, ABC):
         ret = torch.zeros(self.n_node_features)
         ret[-VAR_FEAT_SIZE:] = self._if[idx]
         return ret
-
+    
+    def _apply_fam_mutex(self, node_list: list):
+        """Connects all nodes in node_list with a 'mutex' edge."""
+        for i, node_a in enumerate(node_list):
+            for node_b in node_list[i + 1:]:
+                if node_a in self.G.nodes and node_b in self.G.nodes:
+                    self.G.add_edge(node_a, node_b, edge_label=LLG_EDGE_LABELS["mutex"])
+                    if self.directed:
+                        self.G.add_edge(node_b, node_a, edge_label=LLG_EDGE_LABELS["mutex"])
+    
     def _compute_graph_representation(self) -> None:
         """TODO: reference definition of this graph representation"""
 
@@ -197,6 +207,20 @@ class LiftedLearningGraph(Representation, ABC):
         assert largest_predicate > 0
         assert largest_action_schema > 0
 
+        # === HARDCODED MUTEXES HERE ===
+        
+        # Group 1: {arm-empty, holding}
+        self._apply_fam_mutex(["handempty", "holding"])
+
+        # Groups 2 & 3: Parameterized by Objects
+        for obj in self.problem.objects:
+            # Connects the object node to the predicates involved in its FAM group
+            self._apply_fam_mutex([obj.name, "clear", "holding", "on"])
+            self._apply_fam_mutex([obj.name, "on-table", "holding", "on"])
+
+        # === END OF MUTEX GROUPADDITION ===
+
+
         # map node name to index
         self._node_to_i = {}
         for i, node in enumerate(G.nodes):
@@ -218,7 +242,7 @@ class LiftedLearningGraph(Representation, ABC):
             else:
                 state.append((toks[0], ()))
         return state
-
+# State reasoning nodes are added dynamically based on the input state
     def state_to_tensor(self, state: List[Tuple[str, List[str]]]) -> TGraph:
         """States are represented as a list of (pred, [args])"""
         x = self.x.clone()
@@ -322,3 +346,4 @@ class LiftedLearningGraph(Representation, ABC):
                 )
 
         return c_graph
+    
