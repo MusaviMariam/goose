@@ -159,8 +159,8 @@ class LiftedLearningGraph(Representation, ABC):
 
                     if len(predicate.args) > 0:
                         for j, arg in enumerate(predicate.args):
-                            prec_arg_node = (arg, f"{edge_label}-aux-{z}-var-{j}")  # aux var
-                            G.add_node(prec_arg_node, x=self._if_feature(idx=j))
+                            prec_arg_node = (arg, f"{edge_label}-aux-{z}-var-{j}")  # aux var | Predicate argument nodes
+                            G.add_node(prec_arg_node, x=self._if_feature(idx=j))  
                             G.add_edge(
                                 u_of_edge=aux_node,
                                 v_of_edge=prec_arg_node,
