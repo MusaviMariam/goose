@@ -22,7 +22,7 @@ LLG_EDGE_LABELS = OrderedDict(
         "pre_neg": 3,
         "eff_pos": 4,
         "eff_neg": 5,
-        "mutex": 6,  # not used in current LLG but reserved for future use        
+        "mutex": 6,  # New edge label for FAM groups        
     }
 )
 
@@ -208,17 +208,19 @@ class LiftedLearningGraph(Representation, ABC):
         assert largest_action_schema > 0
 
         # === HARDCODED MUTEXES HERE ===
-        
-        # Group 1: {arm-empty, holding}
-        self._apply_fam_mutex(["handempty", "holding"])
 
-        # Groups 2 & 3: Parameterized by Objects
+        # Group 1: {arm-empty, holding}
+        self._apply_fam_mutex(["armempty", "holding"])
+
+        # Groups 2 & 3: Predicates parameterized by Objects 
+        # 2: {clear V0:object, holding V0:object, on C1:object V0:object}:=1
+        # 3: {on-table V0:object, holding V0:object, on V0:object C1:object}:=1
         for obj in self.problem.objects:
             # Connects the object node to the predicates involved in its FAM group
             self._apply_fam_mutex([obj.name, "clear", "holding", "on"])
             self._apply_fam_mutex([obj.name, "on-table", "holding", "on"])
 
-        # === END OF MUTEX GROUPADDITION ===
+        # === END OF MUTEX GROUP ADDITION ===
 
 
         # map node name to index
